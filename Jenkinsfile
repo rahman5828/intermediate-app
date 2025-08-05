@@ -1,9 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:18'
-        }
-    }
+    agent any
 
     stages {
         stage('Checkout') {
@@ -14,13 +10,21 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                script {
+                    docker.image('node:18').inside {
+                        sh 'npm install'
+                    }
+                }
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'npm test || true' // optional: ignore test failure for now
+                script {
+                    docker.image('node:18').inside {
+                        sh 'npm test || true'
+                    }
+                }
             }
         }
 
@@ -38,11 +42,11 @@ pipeline {
     }
 
     post {
-        failure {
-            echo '❌ Something went wrong.'
-        }
         success {
-            echo '✅ Pipeline completed successfully.'
+            echo '✅ Build completed!'
+        }
+        failure {
+            echo '❌ Build failed.'
         }
     }
 }
