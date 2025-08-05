@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        APP_NAME = 'intermediate-app'
+        IMAGE_NAME = "intermediate-app:latest"
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -28,23 +33,27 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t intermediate-app .'
+                bat "docker build -t %IMAGE_NAME% ."
             }
         }
 
         stage('Deploy') {
             steps {
-                echo '🚀 Deployment stage (to be implemented)'
+                echo '🚀 Starting app container...'
+                // Stop and remove previous container if exists
+                bat 'docker rm -f %APP_NAME% || echo "No existing container."'
+                // Run the new container
+                bat 'docker run -d -p 3000:3000 --name %APP_NAME% %IMAGE_NAME%'
             }
         }
     }
 
     post {
         success {
-            echo '✅ Build completed successfully.'
+            echo '✅ Build and deployment successful.'
         }
         failure {
-            echo '❌ Build failed. Check logs above.'
+            echo '❌ Build failed. Check above logs for details.'
         }
     }
 }
