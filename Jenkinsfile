@@ -4,49 +4,47 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/rahman5828/intermediate-app.git', credentialsId: 'Github-creds'
+                git url: 'https://github.com/rahman5828/intermediate-app.git'
+            }
+        }
+
+        stage('Pull Node Docker Image') {
+            steps {
+                bat 'docker pull node:18'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                script {
-                    docker.image('node:18').inside {
-                        sh 'npm install'
-                    }
-                }
+                bat 'docker run --rm -v "%cd%:/app" -w /app node:18 npm install'
             }
         }
 
         stage('Run Tests') {
             steps {
-                script {
-                    docker.image('node:18').inside {
-                        sh 'npm test || true'
-                    }
-                }
+                bat 'docker run --rm -v "%cd%:/app" -w /app node:18 npm test'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'echo "Building Docker image..."'
+                bat 'docker build -t intermediate-app .'
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying...'
+                echo '🚀 Deployment stage (to be implemented)'
             }
         }
     }
 
     post {
         success {
-            echo '✅ Build completed!'
+            echo '✅ Build completed successfully.'
         }
         failure {
-            echo '❌ Build failed.'
+            echo '❌ Build failed. Check logs above.'
         }
     }
 }
