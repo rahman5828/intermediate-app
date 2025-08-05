@@ -9,7 +9,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/rahman5828/intermediate-app.git', credentialsId: 'Github-creds'
+                git url: 'https://github.com/rahman5828/intermediate-app.git', credentialsId: 'Github-creds'
+
     }
 }
 
