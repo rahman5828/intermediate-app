@@ -9,9 +9,9 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/YOUR_USERNAME/YOUR_REPO.git'
-            }
-        }
+                git 'https://github.com/rahman5828/intermediate-app.git', credentialsId: 'Github-creds'
+    }
+}
 
         stage('Install Dependencies') {
             steps {
